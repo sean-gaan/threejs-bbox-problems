@@ -24,6 +24,7 @@ function Model(props) {
 
   useFrame((state, delta) => {
     mesh.current.rotation.x += delta;
+    boxMesh.current.rotation.x += delta;
   })
 
   useEffect(() => {
@@ -35,13 +36,14 @@ function Model(props) {
 
       // make a BoxBufferGeometry of the same size as Box3
       const dimensions = new Vector3().subVectors( box3.max, box3.min );
-      const boxGeo = new BoxGeometry(dimensions.x, dimensions.y, dimensions.z);
+      const myBoxGeo = new BoxGeometry(dimensions.x, dimensions.y, dimensions.z);
 
       // move new mesh center so it's aligned with the original object
       const matrix = new Matrix4().setPosition(dimensions.addVectors(box3.min, box3.max).multiplyScalar( 0.5 ));
-      boxGeo.applyMatrix4(matrix);
-      const myMesh = new Mesh(boxGeo, new MeshBasicMaterial( { color: 'red', wireframe: true } ));
-      mesh.current.add(myMesh);
+      myBoxGeo.applyMatrix4(matrix);
+      setBoxGeo(myBoxGeo);
+      // const myMesh = new Mesh(boxGeo, new MeshBasicMaterial( { color: 'red', wireframe: true } ));
+      // mesh.current.add(myMesh);
     }
 
   }, [mesh.current]);
@@ -51,6 +53,14 @@ function Model(props) {
   // Return view, these are regular three.js elements expressed in JSX
   return (
     <>
+      { boxGeo != null &&
+        <mesh
+          ref={ boxMesh }
+        >
+          <primitive object={ boxGeo } attach="geometry" />
+          <meshStandardMaterial color='red' wireframe />
+        </mesh>
+    }
 
       <mesh
         {...props}
