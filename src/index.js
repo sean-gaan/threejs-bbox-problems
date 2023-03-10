@@ -18,19 +18,14 @@ function Model(props) {
   const boxMesh = useRef();
   // Set up state for the hovered and active state
   const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
+  const [active, setActive] = useState(false);
+  const [go, setGo] = useState(false);
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useHelper(mesh, BoxHelper, 'cyan')
-
-  useFrame((state, delta) => {
-    mesh.current.rotation.x += delta;
-    boxMesh.current.rotation.x += delta;
-  })
 
   useEffect(() => {
     // create your box mesh here
     if(mesh){
-      console.log(mesh);
       const box3 = new Box3();
       box3.setFromObject(mesh.current);
 
@@ -42,11 +37,18 @@ function Model(props) {
       const matrix = new Matrix4().setPosition(dimensions.addVectors(box3.min, box3.max).multiplyScalar( 0.5 ));
       myBoxGeo.applyMatrix4(matrix);
       setBoxGeo(myBoxGeo);
-      // const myMesh = new Mesh(boxGeo, new MeshBasicMaterial( { color: 'red', wireframe: true } ));
-      // mesh.current.add(myMesh);
+      setGo(true);
     }
 
   }, [mesh.current]);
+
+  useFrame((state, delta) => {
+    if(go){
+      mesh.current.rotation.x += delta;
+      boxMesh.current.rotation.x += delta;
+    }
+
+  })
 
 
 
